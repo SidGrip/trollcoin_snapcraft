@@ -1,0 +1,196 @@
+name: trollcoin
+base: core18
+version: '2.1.1'
+summary: TrollCoin cryptocurrency wallet
+description: |
+  Official TrollCoin Qt Wallet is the secure and user-friendly way to manage your TrollCoin, a decentralized digital currency.
+  Packaged as a Snap by Sidgrip, this application allows you to send, receive, and store your digital assets.
+grade: stable
+confinement: strict
+
+apps:
+  wallet:
+    command: bin/wrapper.sh
+    desktop: usr/share/applications/trollcoin.desktop
+    environment:
+      LD_LIBRARY_PATH: $SNAP/usr/lib/x86_64-linux-gnu:$SNAP/lib:$SNAP/usr/lib
+      QT_PLUGIN_PATH: $SNAP/usr/lib/x86_64-linux-gnu/qt5/plugins
+      QML2_IMPORT_PATH: $SNAP/usr/lib/x86_64-linux-gnu/qt5/qml
+      QT_XCB_GL_INTEGRATION: none
+      DISPLAY: $DISPLAY
+      XDG_RUNTIME_DIR: $SNAP_RUN
+      QT_XKB_CONFIG_ROOT: $SNAP/usr/share/X11/xkb
+      LC_ALL: C.UTF-8
+      XAUTHORITY: $XAUTHORITY
+      QT_NO_SM: 1
+      FONTCONFIG_PATH: $SNAP/etc/fonts
+    plugs:
+      - desktop
+      - desktop-legacy
+      - x11
+      - wayland
+      - opengl
+      - home
+      - network
+      - network-bind
+
+parts:
+  trollcoin:
+    plugin: dump
+    source: ./snap-local/bin
+    organize:
+      TrollCoin: bin/TrollCoin
+    override-build: |
+      echo "Source directory contents:"
+      ls -l $SNAPCRAFT_PART_SRC
+      echo "Install directory before manual steps:"
+      ls -l $SNAPCRAFT_PART_INSTALL/bin/ || echo "Bin directory not created yet"
+      if [ ! -f "$SNAPCRAFT_PART_INSTALL/bin/TrollCoin" ]; then
+        echo "Organize failed, manually copying TrollCoin"
+        mkdir -p $SNAPCRAFT_PART_INSTALL/bin
+        cp $SNAPCRAFT_PART_SRC/TrollCoin $SNAPCRAFT_PART_INSTALL/bin/TrollCoin
+      fi
+      if [ -f "$SNAPCRAFT_PART_INSTALL/bin/TrollCoin" ]; then
+        echo "Found TrollCoin, making executable"
+        chmod +x $SNAPCRAFT_PART_INSTALL/bin/TrollCoin
+      else
+        echo "Error: TrollCoin binary still not found in $SNAPCRAFT_PART_INSTALL/bin/"
+        ls -l $SNAPCRAFT_PART_INSTALL/bin/
+        exit 1
+      fi
+
+  wrapper:
+    plugin: dump
+    source: ./snap-local/bin
+    organize:
+      wrapper.sh: bin/wrapper.sh
+    override-build: |
+      echo "Source directory contents:"
+      ls -l $SNAPCRAFT_PART_SRC
+      echo "Install directory before manual steps:"
+      ls -l $SNAPCRAFT_PART_INSTALL/bin/ || echo "Bin directory not created yet"
+      if [ ! -f "$SNAPCRAFT_PART_SRC/wrapper.sh" ]; then
+        echo "Error: wrapper.sh not found in $SNAPCRAFT_PART_SRC"
+        exit 1
+      fi
+      mkdir -p $SNAPCRAFT_PART_INSTALL/bin
+      cp $SNAPCRAFT_PART_SRC/wrapper.sh $SNAPCRAFT_PART_INSTALL/bin/wrapper.sh
+      if [ -f "$SNAPCRAFT_PART_INSTALL/bin/wrapper.sh" ]; then
+        echo "Found wrapper.sh, making executable"
+        chmod +x $SNAPCRAFT_PART_INSTALL/bin/wrapper.sh
+      else
+        echo "Error: Failed to copy wrapper.sh to $SNAPCRAFT_PART_INSTALL/bin/"
+        ls -l $SNAPCRAFT_PART_INSTALL/bin/
+        exit 1
+      fi
+
+  config-script:
+    plugin: dump
+    source: ./snap-local/bin
+    organize:
+      trollcoin-config.sh: bin/trollcoin-config.sh
+    override-build: |
+      echo "Source directory contents:"
+      ls -l $SNAPCRAFT_PART_SRC
+      echo "Install directory before manual steps:"
+      ls -l $SNAPCRAFT_PART_INSTALL/bin/ || echo "Bin directory not created yet"
+      if [ ! -f "$SNAPCRAFT_PART_INSTALL/bin/trollcoin-config.sh" ]; then
+        echo "Organize failed, manually copying trollcoin-config.sh"
+        mkdir -p $SNAPCRAFT_PART_INSTALL/bin
+        cp $SNAPCRAFT_PART_SRC/trollcoin-config.sh $SNAPCRAFT_PART_INSTALL/bin/trollcoin-config.sh
+      fi
+      if [ -f "$SNAPCRAFT_PART_INSTALL/bin/trollcoin-config.sh" ]; then
+        echo "Found trollcoin-config.sh, making executable"
+        chmod +x $SNAPCRAFT_PART_INSTALL/bin/trollcoin-config.sh
+      else
+        echo "Error: trollcoin-config.sh not found in $SNAPCRAFT_PART_INSTALL/bin/"
+        ls -l $SNAPCRAFT_PART_INSTALL/bin/
+        exit 1
+      fi
+
+  openssl:
+    plugin: dump
+    source: ./snap-local/lib
+    organize:
+      libssl.so.1.0.0: usr/lib/x86_64-linux-gnu/libssl.so.1.0.0
+      libcrypto.so.1.0.0: usr/lib/x86_64-linux-gnu/libcrypto.so.1.0.0
+
+  boost:
+    plugin: dump
+    source: ./snap-local/lib
+    organize:
+      libboost_system.so.1.54.0: usr/lib/x86_64-linux-gnu/libboost_system.so.1.54.0
+      libboost_filesystem.so.1.54.0: usr/lib/x86_64-linux-gnu/libboost_filesystem.so.1.54.0
+      libboost_program_options.so.1.54.0: usr/lib/x86_64-linux-gnu/libboost_program_options.so.1.54.0
+      libboost_thread.so.1.54.0: usr/lib/x86_64-linux-gnu/libboost_thread.so.1.54.0
+
+  libminiupnpc:
+    plugin: dump
+    source: ./snap-local/lib
+    organize:
+      libminiupnpc.so.8: usr/lib/x86_64-linux-gnu/libminiupnpc.so.8
+
+  qrencode:
+    plugin: dump
+    source: ./snap-local/lib
+    organize:
+      libqrencode.so.3: usr/lib/x86_64-linux-gnu/libqrencode.so.3
+
+  desktop-file:
+    plugin: dump
+    source: ./snap-local/usr/share
+    organize:
+      icons/hicolor/256x256/apps/trollcoin.png: usr/share/icons/hicolor/256x256/apps/trollcoin.png
+      applications/trollcoin.desktop: usr/share/applications/trollcoin.desktop
+
+  qt-plugins:
+    plugin: dump
+    source: .
+    after: [dependencies]
+    stage-packages:
+      - libqt5gui5
+    stage:
+      - usr/lib/x86_64-linux-gnu/qt5/plugins/platforms/libqxcb.so
+    prime:
+      - usr/lib/x86_64-linux-gnu/qt5/plugins/platforms/libqxcb.so
+
+  fontconfig-config:
+    plugin: dump
+    source: ./snap-local/etc/fonts
+    organize:
+      fonts.conf: etc/fonts/fonts.conf
+    stage:
+      - etc/fonts/fonts.conf
+    prime:
+      - etc/fonts/fonts.conf
+
+  dependencies:
+    plugin: nil
+    stage-packages:
+      - libqt5gui5
+      - libqt5core5a
+      - libqt5dbus5
+      - libqt5network5
+      - libqt5widgets5
+      - libqt5x11extras5
+      - libx11-6
+      - libxcb1
+      - libxcb-xinerama0
+      - libxcb-xkb1
+      - libxkbcommon0
+      - libxkbcommon-x11-0
+      - libdb5.3++
+      - libevent-2.1-6
+      - libcurl4
+      - libpng16-16
+      - libstdc++6
+      - xkb-data
+      - locales
+      - curl
+      - grep
+      - sed
+      - coreutils
+    stage:
+      - -etc/fonts/fonts.conf
+    prime:
+      - -etc/fonts/fonts.conf
