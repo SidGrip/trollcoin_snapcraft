@@ -4,7 +4,7 @@ version: '2.1.1'
 summary: TrollCoin cryptocurrency wallet
 description: |
   Official TrollCoin Qt Wallet is the secure and user-friendly way to manage your TrollCoin.
-  Packaged as a Snap by Sidgrip, this application allows you to send, receive, and store your digital assets.
+  Packaged as a Snap by Sidgrip.
 grade: stable
 confinement: strict
 
